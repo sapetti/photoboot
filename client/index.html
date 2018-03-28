@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="PhotoBoot" name="title">
+    <title>PhotoBoot</title>
+    <link rel="stylesheet" type="text/css" href="css/video.css">
+</head>
+
+<body>
+    <div id="container">
+        <video autoplay="true" id="videoElement"></video>
+    </div>
+    <div id="counter"></div>
+    <div id="bottomBar">
+        <div id="photo" class="button" onclick="photo({print: false})">
+            <div class="photo-panel left">
+                <img src="images/camera.png" />
+            </div>
+        </div>
+        <div id="photoPrint" class="button" onclick="photo({print:true})">
+            <div class="print-panel right">
+                <img src="images/camera.png" />
+                <img src="images/printer.png" />
+            </div>
+        </div>
+    </div>
+    <script src="js/photoboot.js"></script>
+</body>
+
+</html>
