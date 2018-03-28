@@ -22,7 +22,7 @@ router.get('/photo', ({ query: { print } }, res) => {
     .then(trace('Photo uploaded'))
     .then(_ => archiveFile(filename))
     .then(trace('Photo archived'))
-    .then(_ => print && printPhoto(archiveFolder, filename)) // Set as last step to don't interrup response, uploading or archiving...
+    .then(_ => print && printPhoto({ path: archiveFolder, filename })) // Set as last step to don't interrup response, uploading or archiving...
     .then(trace('Should the photo be printed: ' + print))
     .catch(err => {
       console.error(err)
