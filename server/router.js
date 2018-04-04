@@ -8,7 +8,7 @@ var router = require('express').Router(),
 router.get('/photo', ({ query: { print } }, res) => {
   const t = new Date().getTime(),
     filename = `photo-${t}.jpg`
-
+  print = (print === 'true') // Cast to boolean
   console.log('taking photo...' + print)
   //TODOs:
   //  - Photo preview?
@@ -27,7 +27,7 @@ router.get('/photo', ({ query: { print } }, res) => {
     .catch(err => {
       console.error(err)
       // It won't matter if the response was sent...
-      res.status(500).send('Error while processing photo')
+      //res.status(500).send('Error while processing photo')
     })
 })
 

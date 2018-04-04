@@ -1,5 +1,5 @@
 const server = require('./server/server'),
-  { runCmd, startBrowserFullscreen, trace } = require('./server/utilities')
+  { startBrowserFullscreen, trace } = require('./server/utilities')
 
 server
   .then(trace('Server started'))

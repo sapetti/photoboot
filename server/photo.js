@@ -1,12 +1,12 @@
-import { setTimeout } from 'timers'
+//import { setTimeout } from 'timers'
 
-const { runCmd } = require('./utilities'),
+const { execCmd, spawnCmd } = require('./utilities'),
   { photoFolder, printer } = require('./config')
 
 var queue = []
 
 function takePhoto(filename) {
-  return runCmd(`gphoto2 --capture-image-and-download --filename ${photoFolder}/${filename}`)
+  return execCmd(`gphoto2 --capture-image-and-download --filename ${photoFolder}/${filename}`)
 }
 
 // function printPhoto({ path, filename, retry = 0 }) {
@@ -27,15 +27,12 @@ function takePhoto(filename) {
 // }
 
 function sendPhotoToPrinter({ path, filename, retry }) {
-  return runCmd(`lp -d ${printer} ${path}/${filename}`)
-  // .catch(err => {
-  //   console.error(err)
-  //   if (retry < 5) printPhoto({ path, filename, retry: retry++ })
-  // })
+  console.log('printing...')
+  spawnCmd('lp', [ '-d', printer, `${path}/${filename}` ], true)
 }
 
 function isPrinterIdle() {
-  return runCmd(`lpstat -p ${printer} ${path}/${filename}`).then(({ out }) => out.includes('is idle'))
+  return execCmd(`lpstat -p ${printer} ${path}/${filename}`).then(({ out }) => out.includes('is idle'))
 }
 
 module.exports = {

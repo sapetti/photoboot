@@ -1,15 +1,17 @@
 const fs = require('fs'),
-  path = require('path'),
-  { runCmd } = require('./utilities'),
+//  path = require('path'),
+  { execCmd } = require('./utilities'),
   { archiveFolder, photoFolder } = require('./config')
 
 function archiveFile(filename) {
-  return runCmd(`mv ${photoPath}/${filename} ${archivePath}`)
+console.log('archiving...')
+  return execCmd(`mv ${photoFolder}/${filename} ${archiveFolder}`)
 }
 
-function readFile(filename) {
+function readFile(file) {
+console.log('reading file...')
   return new Promise((resolve, reject) => {
-    fs.readFile(path.join(__dirname, filename), 'utf8', (err, contents) => {
+    fs.readFile(file, 'utf8', (err, contents) => {
       err && reject(err)
       resolve(contents)
     })

@@ -3,17 +3,22 @@ var module = (function(window, navigator, document, undefined) {
   const COUNTDOWN_DELAY = 1000
   const video = document.querySelector('#videoElement')
   const counter = document.getElementById('counter')
+  const constraints = { audio: false, video: { width: 640, height: 480 } }
 
-  navigator.getUserMedia =
-    navigator.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia ||
-    navigator.oGetUserMedia
+  navigator.mediaDevices.getUserMedia =
+    navigator.mediaDevices.getUserMedia ||
+    navigator.mediaDevices.webkitGetUserMedia ||
+    navigator.mediaDevices.mozGetUserMedia ||
+    navigator.mediaDevices.msGetUserMedia ||
+    navigator.mediaDevices.oGetUserMedia
 
-  navigator.getUserMedia && navigator.getUserMedia({ video: true }, handleVideo, videoError)
-  // navigator.getUserMedia({ video: {width: {exact: 320}, height: {exact: 240}} }, handleVideo, videoError);
-  // navigator.getUserMedia({ video: {width: {exact: 640}, height: {exact: 480}} }, handleVideo, videoError);
+  //navigator.mediaDevices.getUserMedia && navigator.mediaDevices.getUserMedia({ video: true }, handleVideo, videoError)
+  // navigator.mediaDevices.getUserMedia({ video: {width: {exact: 320}, height: {exact: 240}} }, handleVideo, videoError);
+  // navigator.mediaDevices.getUserMedia({ video: {width: {exact: 640}, height: {exact: 480}} }, handleVideo, videoError);
+
+  navigator.mediaDevices.getUserMedia(constraints)
+  .then(handleVideo)
+  .catch(videoError)
 
   function handleVideo(stream) {
     video.src = window.URL.createObjectURL(stream)
@@ -42,7 +47,7 @@ var module = (function(window, navigator, document, undefined) {
   function photo({ print }) {
     countdown(COUNTDOWN_SECS)
       .then(_ => fetch(`/photo?print=${print}`))
-      .then(response => response.json())
+      //.then(response => response.json())
       //TODO: log the error??? just in DEV
       .then(response => console.log('response:: ' + JSON.stringify(response)))
   }

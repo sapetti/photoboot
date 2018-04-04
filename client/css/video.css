@@ -1,5 +1,7 @@
 body {
   background-color: darkgrey;
+  overflow:hidden;
+  cursor: none;
 }
 
 img {

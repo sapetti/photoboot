@@ -1,6 +1,6 @@
-const { exec } = require('child_process')
+const { exec, spawn } = require('child_process')
 
-function runCmd(cmd) {
+function execCmd(cmd) {
   return new Promise((resolve, reject) => {
     exec(cmd, (err, stdout, stderr) => {
       err && reject(err)
@@ -9,8 +9,13 @@ function runCmd(cmd) {
   })
 }
 
+function spawnCmd(cmd, args, detached = false) {
+  return spawn(cmd, args, { detached })
+}
+
+
 function startBrowserFullscreen() {
-  return runCmd('chromium-browser --app=http://localhost:3000 --start-fullscreen')
+  return execCmd('chromium-browser --app=https://localhost:8443 --start-fullscreen')
 }
 
 function tap(fn) {
@@ -25,7 +30,8 @@ function trace(msg) {
 }
 
 module.exports = {
-  runCmd,
+  execCmd,
+  spawnCmd,
   startBrowserFullscreen,
   tap,
   trace
