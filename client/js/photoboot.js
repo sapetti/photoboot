@@ -45,10 +45,8 @@ var module = (function(window, navigator, document, undefined) {
   }
 
   function photo({ print }) {
-    countdown(COUNTDOWN_SECS)
-      .then(_ => fetch(`/photo?print=${print}`))
-      //.then(response => response.json())
-      //TODO: log the error??? just in DEV
+    countdown(COUNTDOWN_SECS) //TODO: remove this but handle message from wss
+      .then(_ => fetch(`/photo?print=${print}`)) // TODO: move this to wss
       .then(response => console.log('response:: ' + JSON.stringify(response)))
   }
 
@@ -58,3 +56,32 @@ var module = (function(window, navigator, document, undefined) {
 })(window, navigator, document)
 
 var photo = module.photo
+
+//-------------------------------------------------------------- example
+
+// TODO: handle photo-taken and countdown, trigger take-photo
+
+var socket = io.connect('http:\/\/localhost:8080', { 'forceNew': true }) //Port?? 8443?? escape slash??
+
+socket.on('messages', render )
+
+function render (data) {
+  var html = data.map(function(elem, index) {
+    return(`<div>
+              <strong>${elem.author}</strong>:
+              <em>${elem.text}</em>
+            </div>`);
+  }).join(" ");
+
+  document.getElementById('messages').innerHTML = html;
+}
+
+function addMessage(e) {
+  var message = {
+    author: document.getElementById('username').value,
+    text: document.getElementById('texto').value
+  };
+
+  socket.emit('new-message', message);
+  return false;
+}
