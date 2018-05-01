@@ -10,7 +10,7 @@ function execCmd(cmd) {
 }
 
 function spawnCmd(cmd, args, detached = false) {
-  return spawn(cmd, args, { detached })
+  return spawn(cmd, args, { detached }).on('error', err => console.log(err))
 }
 
 

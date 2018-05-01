@@ -1,8 +1,26 @@
 const express = require('express'),
   compression = require('compression'),
-  router = require('./router'),
-  fs = require('fs')
+  fs = require('fs'),
+  //photo = require('./photo')
+  ws = require('./websocket')
 
+// module.exports = (function server() {
+//   return new Promise((resolve, reject) => {
+//     const app = express()
+//     const server = require('http').Server(app)
+//     const io = require('socket.io')(server)
+
+//    server.listen(3000)
+
+//     // Middleware setup
+//     app.use(express.static(__dirname + '/../client'))
+//     app.use(compression())
+
+//     ws(io)
+
+//     resolve()
+//   })
+// })()
 module.exports = (function server() {
   return new Promise((resolve, reject) => {
     const https = require('https')
@@ -12,22 +30,14 @@ module.exports = (function server() {
       cert: fs.readFileSync(__dirname + '/../security/cert.pem'),
       passphrase: 'thisisaphotoboot'
     }
-
     // Middleware setup
     app.use(express.static(__dirname + '/../client'))
     app.use(compression())
-
-    // Routes
-    //app.use(router)
-
     // Start the server
-    //app.listen(process.env.PORT || 3000, () => resolve('Listening at port 3000'))
     const server = https.createServer(options, app).listen(8443)
     const  io = require('socket.io')(server)
-
-    // Routes
-    app.use(router(io))
-
+    ws(io)
+    console.log('Started')
     resolve()
   })
 })()

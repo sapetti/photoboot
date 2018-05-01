@@ -6,27 +6,53 @@
     <meta content="PhotoBoot" name="title">
     <title>PhotoBoot</title>
     <link rel="stylesheet" type="text/css" href="css/video.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 </head>
 
-<body>
+<body onload="exitVideoMode()">
     <div id="container">
-        <video autoplay="true" id="videoElement"></video>
-    </div>
-    <div id="counter"></div>
-    <div id="bottomBar">
-        <div id="photo" class="button" onclick="photo({print: false})">
-            <div class="photo-panel left">
-                <img src="images/camera.png" />
+
+        <div id="video-card" class="card">
+            <div class="card-body">
+                <video autoplay="true" id="video-element"></video>
+                <div id="counter"></div>
+                <div id="progress"></div>
             </div>
         </div>
-        <div id="photoPrint" class="button" onclick="photo({print:true})">
-            <div class="print-panel right">
-                <img src="images/camera.png" />
-                <img src="images/printer.png" />
+
+        <div id="menu-card" class="card">
+            <div class="card-body">
+                <button type="button" class="btn btn-outline-dark btn-lg btn-block" onclick="photo({  })">Photo</button>
+                <button type="button" class="btn btn-outline-dark btn-lg btn-block" onclick="photo({ print: true })">Photo + Print</button>
+                <button type="button" class="btn btn-outline-dark btn-lg btn-block" onclick="photo({ shots: 4, montage: true })">Montage + Print</button>
             </div>
         </div>
+
+
+
+
+
+
+
+        <!-- div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                <img class="d-block w-100" src="..." alt="First slide">
+                </div>
+                <div class="carousel-item">
+                <img class="d-block w-100" src="..." alt="Second slide">
+                </div>
+                <div class="carousel-item">
+                <img class="d-block w-100" src="..." alt="Third slide">
+                </div>
+            </div>
+        </div -->
+
     </div>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/photoboot.js"></script>
 </body>
 

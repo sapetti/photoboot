@@ -1,0 +1,16 @@
+# $1: Photo filename
+PHOTO_FOLDER="/home/pi/photos"
+ARCHIVE_FOLDER="/home/pi/archived"
+
+echo $PHOTO_FOLDER
+echo $1
+echo $ARCHIVE_FOLDER
+
+#Archive photos
+mv $PHOTO_FOLDER/$1 $ARCHIVE_FOLDER
+cd $ARCHIVE_FOLDER
+ls
+#Print image
+#lp -d Canon_CP900 $1
+#Upload it to dropbox
+#node ../server/cloud.js $1

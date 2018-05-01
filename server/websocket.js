@@ -1,44 +1,53 @@
-var router = require('express').Router(),
-  { execCmd, spawnCmd, trace } = require('./utilities'),
-  { takePhoto, printPhoto } = require('./photo'),
-  { upload } = require('./cloud'),
-  { archiveFile } = require('./files'),
-  { archiveFolder } = require('./config')
+var { execCmd, spawnCmd, trace } = require('./utilities'),
+  { photoFolder, photoScript, printScript, montageScript } = require('./config')
 
-const handleCountDown = (count, socket, resolve) => {
-  socket.emit('countdown', { count })
-  if(count > 0) setTimeout(() => handleCountDown(--count, socket, resolve), 1000)
+const captureImage = filename => execCmd(`gphoto2 --capture-image-and-download --filename ${photoFolder}/${filename}`)
+
+const handleCountDown = (socket, count, shots, time, resolve) => {
+  socket.emit('countdown', { count, shots, time })
+  if (count > 0) setTimeout(() => handleCountDown(socket, --count, shots, time, resolve), 1500)
   else resolve()
 }
 
-const countdown = (socket, count) => new Promise((resolve, reject) => handleCount(socket, count, resolve))
+const countdown = (socket, count, shots, time) =>
+  new Promise((resolve, reject) => handleCountDown(socket, count, shots, time, resolve))
 
-const onTakePhoto = socket => ({print}) {
-  const t = new Date().getTime(),
-    filename = `photo-${t}.jpg`
-  print = (print === 'true') // Cast to boolean
-  console.log('taking photo...' + print)
+const takePhoto = (socket, shots = 1, time = 1, filenames = []) => {
+  console.log('photo!')
+  const filename = `photo-${new Date().getTime()}.jpg`
+  const files = filenames.concat(filename)
+  return countdown(socket, 3, shots, time)
+    .then(() => captureImage(filename))
+    .then(() => (shots - time > 0 ? takePhoto(socket, shots, ++time, files) : files))
+}
+
+const onTakePhoto = socket => options => {
+  const { print, montage, shots } = options
   //TODOs:
   //  - Photo preview?
   //  - Sync countdown - Done? Test it
   //  - Spawn upload to Dropbox and print, now in promise chain...
-  //  - Handle in client: countdown, photo-taken
-  countdown(socket, 3)
-    .then(() => takePhoto(filename))
-    .then(trace('Photo taken:: ' + filename))
-    .then(_ => socket.emit('photo-taken')) // Photo is taken... let the UI progress... photo preview??
-    .then(trace('Status 201 sent'))
-    .then(_ => upload(filename)) // Spawn this, get photo from archived folder
-    .then(trace('Photo uploaded'))
-    .then(_ => archiveFile(filename))
-    .then(trace('Photo archived'))
-    .then(_ => print && printPhoto({ path: archiveFolder, filename })) // Spawn this, get photo from archived folder
-    .then(trace('Should the photo be printed: ' + print))
-    .catch(err => console.error(err))
+  //  - Handle in client: countdown, ready
+  takePhoto(socket, shots)
+    .then(
+      photos =>
+        montage
+          ? spawnCmd(montageScript, photos)
+          : print
+            ? spawnCmd(printScript, photos)
+            : spawnCmd(photoScript, photos)
+    )
+    .then(_ => socket.emit('ready')) // Photo is taken... let the UI progress... photo preview??
+    .then(trace('Sent ready'))
+    .catch(err => {
+      console.error(err)
+      socket.emit('photo-error')
+    })
 }
 
-
-
 module.exports = function(io) {
-  io.on('connection', socket => socket.on('take-photo', onTakePhoto(socket)))
+  io.on('connection', socket => {
+    console.log('client connected...')
+    socket.on('take-photo', onTakePhoto(socket))
+  })
 }
