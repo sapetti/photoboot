@@ -9,10 +9,13 @@ function execCmd(cmd) {
   })
 }
 
-function spawnCmd(cmd, args, detached = false) {
-  return spawn(cmd, args, { detached }).on('error', err => console.log(err))
+function spawnCmd(cmd, args, detached = true) {
+  const child = spawn(cmd, args, { detached }).on('error', err => console.log(err))
+  child.stdout.on('data', data => console.log(`stdout: ${data}`))
+  child.stderr.on('data', data => console.log(`stderr: ${data}`))
+  child.on('close', code => console.log(`child process exited with code ${code}`))
+  return child
 }
-
 
 function startBrowserFullscreen() {
   return execCmd('chromium-browser --app=https://localhost:8443 --start-fullscreen')

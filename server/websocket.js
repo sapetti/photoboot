@@ -1,5 +1,5 @@
 var { execCmd, spawnCmd, trace } = require('./utilities'),
-  { photoFolder, photoScript, printScript, montageScript } = require('./config')
+  { photoFolder, photo_sh, print_sh, montage_sh } = require('./config')
 
 const captureImage = filename => execCmd(`gphoto2 --capture-image-and-download --filename ${photoFolder}/${filename}`)
 
@@ -17,8 +17,8 @@ const takePhoto = (socket, shots = 1, time = 1, filenames = []) => {
   const filename = `photo-${new Date().getTime()}.jpg`
   const files = filenames.concat(filename)
   return countdown(socket, 3, shots, time)
-    .then(() => captureImage(filename))
-    .then(() => (shots - time > 0 ? takePhoto(socket, shots, ++time, files) : files))
+    .then(_ => captureImage(filename))
+    .then(_ => (shots - time > 0 ? takePhoto(socket, shots, ++time, files) : files))
 }
 
 const onTakePhoto = socket => options => {
@@ -29,14 +29,14 @@ const onTakePhoto = socket => options => {
   //  - Spawn upload to Dropbox and print, now in promise chain...
   //  - Handle in client: countdown, ready
   takePhoto(socket, shots)
+    .then(trace('Photos taken'))
     .then(
       photos =>
-        montage
-          ? spawnCmd(montageScript, photos)
-          : print
-            ? spawnCmd(printScript, photos)
-            : spawnCmd(photoScript, photos)
+        montage ? spawnCmd(montage_sh, photos) :
+        print   ? spawnCmd(print_sh, photos)
+                : spawnCmd(photo_sh, photos)
     )
+    .then(trace('Script running'))
     .then(_ => socket.emit('ready')) // Photo is taken... let the UI progress... photo preview??
     .then(trace('Sent ready'))
     .catch(err => {

@@ -1,13 +1,3 @@
-#!/bin/bash
-# $1: Photo filename #1
-
-#Archive photos
-mv $PHOTO_FOLDER/$1 $ARCHIVE_FOLDER
-
-cd $ARCHIVE_FOLDER
-
-#Print image
-lp -d Canon_CP900 $1
-
-#Upload it to dropbox
-node ../server/cloud.js $1
+mv $PHOTO_FOLDER/$1 $ARCHIVED_FOLDER
+lp -d Canon_SELPHY_CP1200 $ARCHIVED_FOLDER$1
+python $CLOUD_SCRIPT $ARCHIVED_FOLDER $1

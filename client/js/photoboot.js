@@ -1,6 +1,6 @@
 const { photo, exitVideoMode } = (function(window, navigator, document, undefined) {
   //const socket = io.connect('https://localhost:8443', { forceNew: true })
-  const socket = io.connect('https://192.168.1.46:8443', { forceNew: true })
+  const socket = io.connect('https://192.168.0.167:8443', { forceNew: true })
   //const socket = io('http://localhost:3000')
   socket.on('countdown', updateCounter)
   socket.on('photo-error', exitVideoMode) // On error just show the menu, maybe the camera was not able to take the photo
@@ -10,8 +10,8 @@ const { photo, exitVideoMode } = (function(window, navigator, document, undefine
   const container = document.querySelector('#container')
   const videoCard = document.querySelector('#video-card')
   const videoPlayer = document.querySelector('#video-element')
-  const counter = document.getElementById('counter')
-  const progress = document.getElementById('progress')
+  const counter = document.querySelector('#counter')
+  const progress = document.querySelector('#progress')
   const constraints = { audio: false, video: { width: 640, height: 480 } }
 
   menuCard.style.display = 'none'
@@ -27,7 +27,7 @@ const { photo, exitVideoMode } = (function(window, navigator, document, undefine
   function updateCounter({ count, shots, time }) {
     counter.style.display = count ? 'block' : 'none'
     counter.innerHTML = count ? `<h1>${count}</h1>` : ''
-    progress.innerHTML = count ? `${time}/${shots}` : ''
+    progress.innerHTML = count ? `<h3>${time}/${shots}</h3>` : ''
   }
 
   function toggleVisibility(element) {
@@ -35,9 +35,11 @@ const { photo, exitVideoMode } = (function(window, navigator, document, undefine
   }
 
   function toggleButtonsStatus() {
-    ;[].forEach.call(document.querySelector('button'), element => {
-      element.disabled = !element.disabled
-      element.classList.toggle('photoDisabled')
+    ;[].forEach.call(
+      document.querySelector('button'), 
+      element => {
+        element.disabled = !element.disabled
+        element.classList.toggle('photoDisabled')
     })
   }
 
